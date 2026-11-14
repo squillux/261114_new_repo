@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>스마트 에코 조감도</title>
+<meta name="description" content="스마트 에코 스쿨 프로젝트 · 우리 모둠 기기가 학교에 설치된 모습을 AI 가상 조감도로 그려 보는 프롬프트 빌더">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
+<style>
+:root{
+  --page:#fff; --bg:#f3f6fc; --ink:#1f2a3d; --muted:#5a6578; --line:#e3e8f2;
+  --brand:#3b6cf6; --brand-soft:#e9efff; --mint:#16b8a6; --mint-soft:#e2f7f4;
+  --pink:#ff7aa2; --pink-soft:#ffeef3; --on:#ffc233; --yellow-soft:#fff6db;
+  --ok:#1f9d55; --ok-soft:#e5f7ec; --bad:#e04848; --bad-soft:#fdecec;
+  --cute:"Jua","Pretendard","Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{margin:0;background:var(--page);color:var(--ink);line-height:1.6;word-break:keep-all;overflow-wrap:break-word;
+  font-family:"Pretendard","Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+header{background:linear-gradient(135deg,var(--brand-soft),var(--mint-soft));border-bottom:2px solid var(--line)}
+header .in{max-width:920px;margin:0 auto;padding:22px 16px 18px}
+.badge{display:inline-block;background:#fff;border:2px solid var(--line);border-radius:999px;padding:2px 12px;font-size:.82rem;font-weight:700;color:var(--brand)}
+h1,h2,h3{font-family:var(--cute);font-weight:400;line-height:1.3}
+h1{font-size:2rem;margin:10px 0 6px}
+.lead{margin:0;color:var(--muted)}
+.hah{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.hah a{flex:1 1 150px;text-decoration:none;color:var(--ink);background:#fff;border:2px solid var(--line);border-radius:16px;padding:8px 12px;font-size:.9rem}
+.hah a b{font-family:var(--cute);font-weight:400;font-size:1.15rem;margin-right:4px}
+.hah a.h b{color:var(--brand)} .hah a.a b{color:var(--pink)}
+main{max-width:920px;margin:0 auto;padding:8px 16px 60px}
+.step{margin:28px 0}
+.step-h{display:flex;align-items:center;gap:10px;font-size:1.5rem;margin:0 0 10px}
+.no{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--brand);color:#fff;font-size:1.1rem;flex:none}
+.step.ai .no{background:var(--pink)} .step.eth .no{background:var(--mint)} .step.sum .no{background:var(--on);color:#3a2a00}
+.card{background:var(--bg);border-radius:18px;padding:16px 18px;margin:10px 0}
+.card h3{margin:0 0 8px;font-size:1.25rem}
+.hint{color:var(--muted);font-size:.9rem}
+.btn{border:2px solid var(--brand);background:var(--brand);color:#fff;border-radius:12px;padding:8px 16px;font-weight:700}
+.btn.line{background:#fff;color:var(--brand)}
+.btn.pink{background:var(--pink);border-color:var(--pink)}
+.ctrl{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.fld{background:#fff;border:2px solid var(--line);border-radius:14px;padding:10px 12px}
+.fld label{display:block;font-weight:800;margin-bottom:4px}
+.fld label small{font-weight:400;color:var(--muted)}
+.fld select,.fld input,.fld textarea,textarea.w{width:100%;padding:7px 9px;border:2px solid var(--line);border-radius:10px;background:#fff}
+.fld input[hidden]{display:none}
+.fld.wide{grid-column:1/-1}
+.prompt{background:#fff;border:3px dashed var(--brand);border-radius:16px;padding:14px 16px;font-size:1.05rem;white-space:pre-wrap;min-height:5em}
+.checks{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.pill{border-radius:999px;padding:2px 12px;font-size:.85rem;font-weight:700;background:var(--bad-soft);color:var(--bad)}
+.pill.on{background:var(--ok-soft);color:var(--ok)}
+.feedback{display:none;margin-top:8px;padding:8px 12px;border-radius:12px;font-weight:700}
+.feedback.show{display:block} .feedback.ok{background:var(--ok-soft);color:var(--ok)} .feedback.bad{background:var(--bad-soft);color:var(--bad)}
+.cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.cmp button{text-align:left;background:#fff;border:2px solid var(--line);border-radius:14px;padding:10px 12px}
+.cmp button.right{border-color:var(--ok);background:var(--ok-soft)} .cmp button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.list label{display:flex;gap:8px;align-items:flex-start;padding:6px 0}
+.list input{margin-top:5px;flex:none;width:18px;height:18px}
+.choice{background:#fff;border-radius:14px;padding:10px 12px;margin:8px 0}
+.choice p{margin:0 0 6px}
+.choice .opts{display:flex;gap:6px;flex-wrap:wrap}
+.choice .opts button{border:2px solid var(--line);background:#fff;border-radius:10px;padding:4px 14px;font-weight:700}
+.choice .opts button.right{border-color:var(--ok);background:var(--ok-soft)} .choice .opts button.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.choice .ex{display:none;margin-top:6px;font-size:.9rem} .choice .ex.show{display:block}
+.label-out{background:#fff;border:2px solid var(--line);border-radius:12px;padding:8px 12px;font-weight:700}
+details.teach{border:2px dashed var(--line);border-radius:16px;padding:10px 14px;margin:16px 0;background:#fff}
+details.teach summary{font-weight:800;cursor:pointer}
+details.teach li{margin:4px 0}
+.drafts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.drafts button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:3px 10px;font-size:.85rem}
+.show-over{position:fixed;inset:0;z-index:50;background:#0f1423;color:#fff;display:flex;flex-direction:column;justify-content:center;padding:5vw}
+.show-over .t{font-family:var(--cute);font-size:1.4rem;color:#9fb6ff;margin-bottom:12px}
+.show-over .p{font-size:clamp(20px,3.2vw,40px);line-height:1.5;white-space:pre-wrap}
+.show-over button{position:absolute;top:16px;right:16px;background:#fff;color:#0f1423;border:0;border-radius:12px;padding:8px 16px;font-weight:800}
+footer{max-width:920px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:.85rem}
+@media print{header .hah,.ctrl,.drafts,details.teach{display:none}}
+</style>
+</head>
+<body>
+<header><div class="in">
+  <span class="badge">중1 정보 · 스마트 에코 스쿨 프로젝트 · 읽걷쓰 + H-A-H</span>
+  <h1>🏫🌱 우리 기기 가상 조감도 만들기</h1>
+  <p class="lead">우리 모둠이 설계한 스마트 에코 기기가 학교에 실제로 설치된다면 어떤 모습일까요? AI에게 정확하게 부탁하는 문장(프롬프트)을 만들고, AI가 그린 그림을 우리가 판단해요.</p>
+  <nav class="hah">
+    <a class="h" href="#s2"><b>H</b>학생이 먼저 · 프롬프트 설계</a>
+    <a class="a" href="#s3"><b>A</b>AI가 돕기 · 선생님 화면에서 생성</a>
+    <a class="h" href="#s4"><b>H</b>학생이 판단 · 평가하고 고치기</a>
+  </nav>
+</div></header>
+
+<main>
+  <details class="teach">
+    <summary>🧑‍🏫 선생님 안내 (눌러서 펼치기)</summary>
+    <ul>
+      <li><b>준비</b>: 사람이 나오지 않게 학교 공간(복도, 빈 교실, 화장실 앞 등) 사진을 3~5장 찍고 번호를 붙여 칠판에 보여 주세요. 학생 사진은 쓰지 않아요.</li>
+      <li><b>생성</b>: 교사 PC에서 이미지 편집이 되는 AI(예: Gemini)에 해당 번호 사진을 올리고, 모둠 프롬프트를 붙여 넣어요. 학생은 AI 서비스에 가입하지 않아요.</li>
+      <li><b>받기</b>: 모둠은 [📋 복사]한 문장을 학급 게시판(클래스룸 등)에 올리거나, [🖥 크게 보기]로 선생님께 보여 줘요.</li>
+      <li><b>시간</b>: 한 장 생성에 1분 안팎 → 8모둠 1차 생성 15~20분, 2차 수정은 원하는 모둠만.</li>
+      <li><b>저장</b>: 이 페이지는 아무것도 서버로 보내지 않아요. 임시 저장은 이 기기 브라우저에만 남아요.</li>
+      <li><b>사전 점검</b>: 학교 와이파이에서 AI 서비스가 열리는지, 사진 속 배경이 잘 유지되는지 미리 한 번 시험해 보세요.</li>
+    </ul>
+  </details>
+
+  <!-- 1 생각 열기 -->
+  <section class="step" id="s1">
+    <h2 class="step-h"><span class="no">1</span>생각 열기 · AI에게 잘 부탁하기</h2>
+    <div class="card">
+      <h3>🤔 어느 부탁이 더 좋을까요?</h3>
+      <p>같은 복도 사진을 AI에게 주었어요. 우리 기기가 원하는 모습으로 나올 가능성이 높은 쪽을 골라 보세요.</p>
+      <div class="cmp" id="cmp">
+        <button data-k="0">"복도에 멋진 에너지 절약 기계 넣어 줘."</button>
+        <button data-k="1">"복도 전등 스위치 위 벽에 손바닥만 한 흰색 상자를 달아 줘. 앞면에 인체 감지 센서와 초록 LED가 있고, 사람이 없어서 전등이 꺼진 장면이야. 나머지 배경은 그대로 둬."</button>
+      </div>
+      <div class="feedback" id="cmpFb"></div>
+      <p class="hint">좋은 프롬프트의 5요소: <b>어디에</b>(설치 위치) · <b>무엇을</b>(기기와 센서) · <b>어떤 모양</b>(크기·색) · <b>어떻게 작동</b>(장면) · <b>지킬 것</b>(배경 유지, 사람 넣지 않기)</p>
+    </div>
+  </section>
+
+  <!-- 2 H 학생이 먼저 -->
+  <section class="step" id="s2">
+    <h2 class="step-h"><span class="no">H</span>학생이 먼저 · 프롬프트 설계하기</h2>
+    <div class="card">
+      <h3>🛠 우리 모둠 기기 설계 → 프롬프트</h3>
+      <p class="hint">걷기 활동에서 찾은 문제와 우리가 설계한 알고리즘(센서 → 처리 → 액추에이터)을 떠올리며 골라요. '직접 쓰기'를 고르면 칸이 열려요.</p>
+      <div class="grid" id="form"></div>
+      <h3 style="margin-top:16px">✨ 완성된 프롬프트</h3>
+      <div class="prompt" id="prompt"></div>
+      <div class="checks" id="checks"></div>
+      <div class="feedback" id="pFb"></div>
+      <div class="ctrl">
+        <button class="btn" id="copy">📋 복사</button>
+        <button class="btn line" id="show">🖥 크게 보기</button>
+        <button class="btn line" id="save">💾 이 기기에 임시 저장</button>
+        <button class="btn line" id="reset">↺ 처음부터</button>
+      </div>
+      <div class="drafts" id="drafts"></div>
+    </div>
+  </section>
+
+  <!-- 3 A AI가 돕기 -->
+  <section class="step ai" id="s3">
+    <h2 class="step-h"><span class="no">A</span>AI가 돕기 · 선생님 화면에서 생성</h2>
+    <div class="card">
+      <p>선생님이 우리 모둠이 고른 사진에 프롬프트를 넣어 AI 이미지를 만들어요. 생성되는 동안 예상해 보세요.</p>
+      <label class="hint" for="guess">🔮 AI가 가장 잘 그릴 것 같은 부분과, 틀리게 그릴 것 같은 부분은? (저장되지 않아요)</label>
+      <textarea class="w" id="guess" rows="2" placeholder="예: 상자 모양은 잘 그리겠지만 센서 위치는 엉뚱한 곳에 둘 것 같다."></textarea>
+    </div>
+  </section>
+
+  <!-- 4 H 학생이 판단 -->
+  <section class="step" id="s4">
+    <h2 class="step-h"><span class="no">H</span>학생이 판단 · 결과를 평가하고 고치기</h2>
+    <div class="card">
+      <h3>🔍 AI 조감도 평가표</h3>
+      <p class="hint">선생님 화면의 결과를 보고, 맞으면 체크해요. 체크하지 못한 항목이 다음 수정 요청이 돼요.</p>
+      <div class="list" id="eval"></div>
+      <h3 style="margin-top:14px">✏️ 수정 요청 문장 (2차 생성용)</h3>
+      <div class="prompt" id="fix"></div>
+      <div class="ctrl"><button class="btn" id="copyFix">📋 수정 요청 복사</button><button class="btn line" id="showFix">🖥 크게 보기</button></div>
+      <p class="hint">💡 AI는 그럴듯하게 그리지만, 실제로 작동하는지는 판단하지 못해요. 센서가 사람을 감지할 수 있는 위치인지, 전선과 전원은 어떻게 연결될지는 <b>우리가</b> 판단해요.</p>
+    </div>
+  </section>
+
+  <!-- 5 AI 윤리 -->
+  <section class="step eth" id="s5">
+    <h2 class="step-h"><span class="no">5</span>AI 윤리 · 가상 이미지 바르게 쓰기</h2>
+    <div class="card">
+      <h3>⚖️ 괜찮을까요?</h3>
+      <div id="ethics"></div>
+    </div>
+    <div class="card">
+      <h3>🏷 AI 이미지 표시 문구 만들기</h3>
+      <p class="hint">발표 자료나 게시물에 조감도를 넣을 때 아래 문구를 함께 붙여요.</p>
+      <div class="label-out" id="labelOut"></div>
+      <div class="ctrl"><button class="btn line" id="copyLabel">📋 표시 문구 복사</button></div>
+    </div>
+  </section>
+
+  <!-- 6 정리 -->
+  <section class="step sum" id="s6">
+    <h2 class="step-h"><span class="no">6</span>정리 · 한 줄 성찰</h2>
+    <div class="card">
+      <p>AI는 우리가 상상한 기기를 <b>보이게</b> 해 주었어요. 그렇다면 기기를 <b>작동하게</b> 만드는 것은 누구의 몫일까요?</p>
+      <textarea class="w" rows="2" placeholder="예: AI는 모습만 보여 주고, 센서 값과 조건을 정해 실제로 작동하게 만드는 건 우리의 코드다. (저장되지 않아요)"></textarea>
+    </div>
+  </section>
+</main>
+<footer>스마트 에코 스쿨 프로젝트 수업 자료 · 이 페이지는 입력한 내용을 서버로 보내지 않아요.</footer>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[<>&"]/g, c => ({'<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;'}[c]));
+const store = {get(k){ try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; } }, set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }};
+const BAD = ['씨발','시발','씨바','ㅅㅂ','ㅆㅂ','병신','ㅂㅅ','븅신','개새','개색','좆','존나','졸라','지랄','ㅈㄹ','닥쳐','꺼져','미친놈','미친년','니애미','느금','엠창','fuck','shit','시체','폭발','무기','총기','흉기'];
+const bad = v => { const s = String(v).toLowerCase().replace(/[\s._*~!?,-]/g, '').replace(/시발(점|역)/g, ''); return BAD.some(w => s.includes(w)); };
+function feedback(el, ok, msg){ el.textContent = msg; el.className = 'feedback show ' + (ok ? 'ok' : 'bad'); }
+
+/* 1 생각 열기 */
+document.querySelectorAll('#cmp button').forEach(b => b.onclick = () => {
+  const ok = b.dataset.k === '1';
+  document.querySelectorAll('#cmp button').forEach(x => x.classList.remove('right', 'wrong'));
+  b.classList.add(ok ? 'right' : 'wrong');
+  feedback($('#cmpFb'), ok, ok ? '⭕ 맞아요! 위치·기기·모양·작동 장면·지킬 것이 모두 들어 있어요.' : '❌ "멋진 기계"만으로는 AI가 무엇을 어디에 그려야 할지 몰라요. 다른 쪽과 비교해 보세요.');
+});
+
+/* 2 프롬프트 빌더 — 항목: [id, 라벨, 도움말, 보기들, 프롬프트에 들어갈 문구 변환] ('직접 쓰기' 보기는 입력칸을 연다) */
+const OWN = '✏️ 직접 쓰기';
+const F = [
+  {id: 'photo', label: '📷 사진 번호', help: '선생님이 보여 준 학교 사진', opts: ['1번 사진', '2번 사진', '3번 사진', '4번 사진', '5번 사진']},
+  {id: 'place', label: '📍 장소', help: '사진 속 공간', opts: ['복도', '빈 교실', '화장실 앞', '계단', '과학실', '도서관', OWN]},
+  {id: 'problem', label: '⚠️ 해결할 문제', help: '걷기 활동에서 찾은 낭비', opts: ['사람이 없는데 전등이 켜져 있다', '빈 교실에 냉난방기가 켜져 있다', '창문이 열린 채 냉방기를 켠다', '아무도 없는 화장실 환풍기가 계속 돈다', '낮에 밝은데도 복도 전등이 켜져 있다', OWN]},
+  {id: 'name', label: '🏷 기기 이름', help: '우리 모둠이 붙인 이름', input: '예: 스마트 자동 소등기'},
+  {id: 'sensor', label: '👀 입력(센서)', help: '무엇을 감지하나요?', opts: ['인체 감지 센서(사람의 움직임)', '빛 센서(밝기)', '온도 센서', '소리 센서', '거리 센서', '문·창문 열림 센서', OWN]},
+  {id: 'output', label: '⚙️ 출력(액추에이터)', help: '무엇을 움직이나요?', opts: ['서보 모터가 전등 스위치를 눌러 끈다', 'LED 표시등이 색으로 상태를 알려 준다', '스피커로 안내 음성을 낸다', '작은 화면에 안내 문구를 보여 준다', 'DC 모터로 환풍기를 켜고 끈다', OWN]},
+  {id: 'where', label: '🧭 설치 위치', help: '사진 속 어디에?', opts: ['전등 스위치 바로 위 벽', '출입문 옆 벽', '천장 가운데', '창문 틀 위', '칠판 옆 벽', '냉난방기 아래 벽', OWN]},
+  {id: 'look', label: '🎨 모양·크기·색', help: '눈에 보이는 모습', opts: ['손바닥만 한 흰색 네모 상자', '둥근 모양의 작은 하늘색 기기', '투명 케이스 안에 마이크로비트 보드가 보이는 모습', '친환경 느낌의 연두색 상자에 나뭇잎 그림', OWN]},
+  {id: 'scene', label: '🎬 작동 장면', help: '그림 속 순간', opts: ['사람이 없어 전등이 꺼지고 초록 LED가 켜진 장면', '센서가 감지해 기기가 막 작동하는 순간', '기기 화면에 "에너지 절약 중"이 표시된 장면', OWN]},
+  {id: 'style', label: '🖼 그림 느낌', help: '결과 이미지 스타일', opts: ['실제 사진처럼 자연스럽게', '설계도처럼 부품 이름표를 붙여서', '밝은 일러스트로']},
+  {id: 'extra', label: '➕ 더 넣고 싶은 것', help: '선택 · 40자까지', input: '예: 기기 옆에 작은 안내 스티커', wide: true, max: 40},
+];
+const KEY = 'eco:prompt', DKEY = 'eco:drafts';
+const state = Object.assign({}, store.get(KEY) || {});
+function buildForm(){
+  $('#form').innerHTML = F.map(f => `<div class="fld${f.wide ? ' wide' : ''}"><label for="f-${f.id}">${f.label} <small>${f.help}</small></label>` +
+    (f.opts ? `<select id="f-${f.id}"><option value="">고르기</option>${f.opts.map(o => `<option>${esc(o)}</option>`).join('')}</select><input id="o-${f.id}" maxlength="40" placeholder="직접 써요 (40자까지)" hidden>`
+            : `<input id="f-${f.id}" maxlength="${f.max || 20}" placeholder="${esc(f.input)}">`) + '</div>').join('');
+  F.forEach(f => {
+    const el = $('#f-' + f.id), own = $('#o-' + f.id), v = state[f.id] || '';
+    if (f.opts){
+      if (v && !f.opts.includes(v)){ el.value = OWN; own.hidden = false; own.value = v; } else el.value = v;
+      el.onchange = () => { own.hidden = el.value !== OWN; if (!own.hidden) own.focus(); update(); };
+      own.oninput = update;
+    } else { el.value = v; el.oninput = update; }
+  });
+}
+const val = id => { const f = F.find(x => x.id === id), el = $('#f-' + id); if (!f.opts) return el.value.trim(); return el.value === OWN ? $('#o-' + id).value.trim() : el.value; };
+function compose(){
+  const v = {}; F.forEach(f => v[f.id] = val(f.id));
+  const name = v.name ? `'${v.name}' 장치` : '에너지 절약 장치';
+  const lines = [`첨부한 학교 사진(${v.photo || '사진 번호'}${v.place ? ', ' + v.place : ''})에 우리 모둠이 설계한 ${name}를 자연스럽게 설치한 모습으로 바꿔 줘.`];
+  [['설치 위치', v.where], ['해결할 문제', v.problem], ['감지(센서)', v.sensor], ['동작(액추에이터)', v.output], ['모양·크기·색', v.look], ['그림 속 장면', v.scene], ['추가', v.extra]]
+    .forEach(([k, x]) => { if (x) lines.push(`- ${k}: ${x}`); });
+  lines.push(`지킬 것: 사진의 나머지 배경(벽, 바닥, 창문, 가구, 조명 위치)은 그대로 유지하고, 사람은 넣지 말아 줘.`);
+  lines.push(`그림 느낌: ${v.style || '실제 사진처럼 자연스럽게'}`);
+  return {v, text: lines.join('\n')};
+}
+const NEED = [['어디에', v => v.place && v.where && v.photo], ['무엇을', v => v.sensor && v.output], ['어떤 모양', v => v.look], ['어떻게 작동', v => v.scene], ['왜(문제)', v => v.problem]];
+let current = '';
+function update(){
+  const {v, text} = compose(); current = text;
+  F.forEach(f => state[f.id] = v[f.id]); store.set(KEY, state);
+  $('#prompt').textContent = text;
+  $('#checks').innerHTML = NEED.map(([k, ok]) => `<span class="pill${ok(v) ? ' on' : ''}">${ok(v) ? '✓' : '·'} ${k}</span>`).join('');
+  $('#pFb').className = 'feedback';
+  updateFix(); updateLabel();
+}
+function ready(){
+  const {v} = compose(), miss = NEED.filter(([, ok]) => !ok(v)).map(([k]) => k);
+  if (bad(current)){ feedback($('#pFb'), false, '⚠️ 학교 수업에 맞지 않는 낱말이 있어요. 고쳐 주세요.'); return false; }
+  if (miss.length){ feedback($('#pFb'), false, `아직 비어 있어요: ${miss.join(', ')} — 모두 채우면 AI가 더 정확하게 그려요.`); return false; }
+  return true;
+}
+function copy(text, btn, label){
+  const done = () => { btn.textContent = '✅ 복사했어요'; setTimeout(() => btn.textContent = label, 1500); };
+  if (navigator.clipboard) navigator.clipboard.writeText(text).then(done).catch(() => fallback());
+  else fallback();
+  function fallback(){ const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); done(); } catch(e){} t.remove(); }
+}
+function show(title, text){
+  const o = document.createElement('div'); o.className = 'show-over';
+  o.innerHTML = `<button>닫기 ✕</button><div class="t">${esc(title)}</div><div class="p">${esc(text)}</div>`;
+  o.querySelector('button').onclick = () => o.remove();
+  document.addEventListener('keydown', function k(e){ if (e.key === 'Escape'){ o.remove(); document.removeEventListener('keydown', k); } });
+  document.body.appendChild(o);
+}
+$('#copy').onclick = e => { if (ready()) copy(current, e.target, '📋 복사'); };
+$('#show').onclick = () => { if (ready()) show(`🏫 ${state.name || '우리 모둠'} · ${state.photo || ''}`, current); };
+$('#reset').onclick = () => { if (!confirm('입력한 내용을 모두 지울까요?')) return; Object.keys(state).forEach(k => delete state[k]); store.set(KEY, state); buildForm(); update(); };
+function drafts(){
+  const d = store.get(DKEY) || [];
+  $('#drafts').innerHTML = d.length ? '<span class="hint">임시 저장:</span>' + d.map((x, i) => `<button data-i="${i}" title="불러오기">📄 ${esc(x.name || '이름 없음')} · ${esc(x.at)}</button>`).join('') : '';
+  document.querySelectorAll('#drafts [data-i]').forEach(b => b.onclick = () => { Object.assign(state, d[+b.dataset.i].v); buildForm(); update(); });
+}
+$('#save').onclick = e => {
+  const d = store.get(DKEY) || [], t = new Date();
+  d.unshift({name: state.name, at: `${t.getMonth() + 1}/${t.getDate()} ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}`, v: Object.assign({}, state)});
+  store.set(DKEY, d.slice(0, 5)); drafts();
+  e.target.textContent = '✅ 저장했어요'; setTimeout(() => e.target.textContent = '💾 이 기기에 임시 저장', 1500);
+};
+
+/* 4 평가표 → 수정 요청 */
+const EV = [
+  ['배경(벽, 바닥, 창문)이 원래 사진과 같다', '배경은 원래 사진과 똑같이 유지해 줘'],
+  ['기기가 우리가 정한 위치에 있다', v => `기기를 이 위치로 옮겨 줘: ${v.where || '처음에 정한 위치'}`],
+  ['센서가 눈에 보이고, 감지할 수 있는 방향을 향한다', v => `감지 부분(${v.sensor || '센서'})이 앞면에 잘 보이고 감지할 공간을 향하게 해 줘`],
+  ['작동 장면이 우리가 정한 대로 나왔다', v => `장면을 이렇게 바꿔 줘: ${v.scene || '처음에 정한 장면'}`],
+  ['기기 크기와 모양이 실제로 만들 수 있을 만큼 현실적이다', v => `기기를 실제로 만들 수 있는 크기로 줄이고 이 모양으로 해 줘: ${v.look || '작고 단순한 상자'}`],
+  ['사람, 글자 오류, 이상한 물건이 없다', '사람과 이상한 글자, 필요 없는 물건은 지워 줘'],
+];
+$('#eval').innerHTML = EV.map(([t], i) => `<label><input type="checkbox" data-i="${i}"> ${t}</label>`).join('');
+document.querySelectorAll('#eval input').forEach(c => c.onchange = updateFix);
+let fixText = '';
+function updateFix(){
+  const v = compose().v, miss = [...document.querySelectorAll('#eval input')].filter(c => !c.checked).map(c => EV[+c.dataset.i][1]).map(f => typeof f === 'function' ? f(v) : f);
+  fixText = miss.length ? `방금 만든 그림을 바탕으로 다음만 고쳐 줘.\n${miss.map((m, i) => `${i + 1}. ${m}.`).join('\n')}\n나머지는 그대로 둬.` : '🎉 모든 항목을 만족해요! 수정 요청 없이 이 조감도를 발표에 써요.';
+  $('#fix').textContent = fixText;
+}
+$('#copyFix').onclick = e => copy(fixText, e.target, '📋 수정 요청 복사');
+$('#showFix').onclick = () => show('✏️ 수정 요청', fixText);
+
+/* 5 윤리 */
+const ETH = [
+  {t: '조감도를 "우리 학교에 설치된 새 기기"라며 실제 사진처럼 SNS에 올린다.', a: 1, e: '실제로 없는 장면을 사실처럼 퍼뜨리면 가짜 정보가 돼요. AI 이미지라고 꼭 밝혀요.'},
+  {t: '발표 자료에 "AI로 만든 가상 이미지"라고 표시하고 넣는다.', a: 0, e: '보는 사람이 가상 이미지임을 알 수 있어요.'},
+  {t: '더 실감 나게 하려고 친구 얼굴 사진을 함께 넣어 생성한다.', a: 1, e: '친구의 얼굴은 개인 정보예요. 동의 없이 AI 서비스에 올리면 안 돼요.'},
+  {t: '사람이 나오지 않은 학교 공간 사진만 사용한다.', a: 0, e: '개인 정보가 드러나지 않아 안전해요.'},
+  {t: 'AI가 그린 기기 모양을 그대로 믿고, 센서 위치를 확인하지 않는다.', a: 1, e: 'AI는 그럴듯하게 그릴 뿐 작동을 보장하지 않아요. 판단은 우리 몫이에요.'},
+];
+$('#ethics').innerHTML = ETH.map((x, i) => `<div class="choice" data-i="${i}"><p>${x.t}</p><div class="opts"><button data-k="0">⭕ 괜찮아요</button><button data-k="1">❌ 안 돼요</button></div><div class="ex"></div></div>`).join('');
+document.querySelectorAll('#ethics .choice').forEach(c => c.querySelectorAll('button').forEach(b => b.onclick = () => {
+  const it = ETH[+c.dataset.i], ok = +b.dataset.k === it.a;
+  c.querySelectorAll('button').forEach(x => x.classList.remove('right', 'wrong')); b.classList.add(ok ? 'right' : 'wrong');
+  const ex = c.querySelector('.ex'); ex.textContent = (ok ? '⭕ ' : '❌ 다시 생각해 봐요. ') + (ok ? it.e : ''); ex.classList.add('show');
+}));
+function updateLabel(){ $('#labelOut').textContent = `※ 이 그림은 생성형 AI로 만든 가상 이미지입니다. (${state.name || '우리 모둠 기기'} 설치 상상도 · 실제 설치된 모습이 아님)`; }
+$('#copyLabel').onclick = e => copy($('#labelOut').textContent, e.target, '📋 표시 문구 복사');
+
+buildForm(); update(); drafts();
+</script>
+</body>
+</html>
